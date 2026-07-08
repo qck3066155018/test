@@ -1,15 +1,20 @@
-# for module compiling
 import os
-Import('RTT_ROOT')
+import rtconfig
 from building import *
 
+Import('SDK_LIB')
+
 cwd = GetCurrentDir()
-objs = []
-list = os.listdir(cwd)
 
-for d in list:
-    path = os.path.join(cwd, d)
-    if os.path.isfile(os.path.join(path, 'SConscript')):
-        objs = objs + SConscript(os.path.join(d, 'SConscript'))
+# add general drivers
+src = Split('''
+board.c
+CubeMX_Config/Src/stm32f4xx_hal_msp.c
+''')
+path =  [cwd]
+path += [cwd + '/CubeMX_Config/Inc']
 
-Return('objs')
+CPPDEFINES = ['STM32F407xx']
+group = DefineGroup('Drivers', src, depend = [''], CPPPATH = path, CPPDEFINES = CPPDEFINES)
+
+Return('group')
